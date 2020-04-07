@@ -87,6 +87,21 @@ export default ( selector, Block, getProps = getPropsFallback ) => {
 				/>,
 				element
 			);
+
+			// todo make sure that react-dom, lodash, etc aren't getting bundled into the build, should be using from core versions as external instead
+				// seems lke they're being bundled live-schedule.min.js
+				// potential issues w/ file size, version conflicts
+				// see kellys comments on #104
+
+			/*      but they're showing up in the build. maybe they should up anyway though, so removing them here doesn't change that?
+			 *      referencing here doesn't _add_ them to the build, they'd be there anyway b/c wp/element addds them to the build?
+			 *
+			 *      but if they're externals they shouldn't be showing up in our build file, they should reside in wp/element's build file
+			 *
+			 *      changed it to pull from wp/element for https://github.com/WordPress/wordcamp.org/pull/416, but still need to make sure they're
+			 *      not winding up in our build file
+			 */
+
 		} );
 	}
 };
