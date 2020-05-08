@@ -109,11 +109,21 @@ function getExampleData() {
 	// todo prune all these fields to remove anything that's not needed
 
 	// also update slugs, titles, urls, ids, etc to look cleaner
-	const hourInMilliseconds = 60 * 60 * 1000;
-	const yearInMilliseconds = 60 * 60 * 24 * 365 * 1000;
 
-	// `_wcpt_session_time` must not be the same day as any real sessions, or the grid for the non-preview will collapse when the block is selected
-	const todayNextYear = Date.now() + yearInMilliseconds;
+	const hourInSeconds = 60 * 60;
+	const yearInSeconds = 60 * 60 * 24 * 365;
+
+	/*
+	 * Start at 0:00, so that adding a few hours never pushes the date over to tomorrow. The preview would be
+	 * distorted if that happened.
+	 */
+	const todayZeroHour = new Date( new Date().toDateString() );
+
+	/*
+	 * `_wcpt_session_time` must not be the same day as any real sessions, or the grid for the actual block will
+	 * collapse when the preview is shown.
+	 */
+	const todayNextYear = ( todayZeroHour.valueOf() / 1000 )+ yearInSeconds;
 
 	return {
 		'allSessions': [
@@ -127,7 +137,7 @@ function getExampleData() {
 					'rendered': 'Session 7 &#8211; global'
 				},
 				'meta'            : {
-					'_wcpt_session_time'    : todayNextYear + ( 2 * hourInMilliseconds ),
+					'_wcpt_session_time'    : todayNextYear + ( 2 * hourInSeconds ),
 					'_wcpt_session_duration': 1800,
 					'_wcpt_session_type'    : 'custom'
 				},
@@ -149,7 +159,7 @@ function getExampleData() {
 					'rendered': 'Session 6 &#8211; span multiple contiguous tracks'
 				},
 				'meta'            : {
-					'_wcpt_session_time'    : todayNextYear + hourInMilliseconds,
+					'_wcpt_session_time'    : todayNextYear + hourInSeconds,
 					'_wcpt_session_duration': 3600,
 					'_wcpt_session_type'    : 'session'
 				},
@@ -183,7 +193,7 @@ function getExampleData() {
 					'rendered': 'Session 5'
 				},
 				'meta'            : {
-					'_wcpt_session_time'    : todayNextYear + ( hourInMilliseconds / 2 ),
+					'_wcpt_session_time'    : todayNextYear + ( hourInSeconds / 2 ),
 					'_wcpt_session_duration': 5400,
 					'_wcpt_session_type'    : 'session'
 				},
