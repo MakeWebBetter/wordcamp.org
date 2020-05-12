@@ -20,13 +20,12 @@ const rawScheduleData = window.WordCampBlocks.schedule || {};
 
 /*
  todo-beta
- clean up any todo-beta problems that are important
- then clean up any quick and easy todo things anywhere in block that would hold up review
+
  then lint php and js
  switch to v8.0.0 and test, b/c have been working from gutneberg `master` to avoid console errors - https://github.com/WordPress/gutenberg/issues/22080
  once front-end ready for beta, squash this branch down to atomic commits as if you were going to merge to production
  review each commit to make sure doesn't contain stuff that doesn't match the commit msg
- maybe cherry-pick some of the tangiential ones to prod, if they don't need discussion
+
  then create a new branch from here, and strip out to-do comments and anything other tangential things. includes everything needed for beta test, but avoid unnecessary unfinished things
  submit pr for ^ branch for review of major architectural things, then start beta test
 	 can close scaffolding pr

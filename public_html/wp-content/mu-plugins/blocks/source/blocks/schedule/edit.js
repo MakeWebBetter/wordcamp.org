@@ -4,8 +4,6 @@
 import { useSelect } from '@wordpress/data';
 import { dateI18n, setSettings, __experimentalGetSettings } from '@wordpress/date';
 import { createContext } from '@wordpress/element';
-// todo look into https://github.com/WordPress/gutenberg/blob/master/docs/designers-developers/developers/block-api/block-context.md
-//      maybe can replace direct Context usage with ^, for simplicity and less code?
 
 /*
  * Work around Gutenberg bug: https://github.com/WordPress/gutenberg/issues/22193
@@ -26,7 +24,7 @@ export const ScheduleGridContext = createContext();
 
 // An "implicit" track is assigned to sessions that don't have any real tracks assigned.
 // See controller.php::print_dynamic_styles().
-// if remove that function b/c using js to render front end, then probably move docs from there to
+// todo if remove that function b/c using js to render front end, then probably move docs from there to
 // renderdynamicgridstyles()
 export const implicitTrack = { id: 0 };
 
@@ -339,6 +337,7 @@ const fetchScheduleData = ( select ) => {
 	// maybe open issue proposing that we remove store and simplify blocks that use it, since it's just tech debt?
 	//      don't have to implement now, but get it documented while thinking about it
 
+	// These must be kept in sync with `get_all_sessions()`.
 	const sessionArgs = {
 		/*
 		 * This doesn't include `session_cats_rendered` because we already need the category id/slug in other
@@ -358,17 +357,18 @@ const fetchScheduleData = ( select ) => {
 		],
 	};
 
+	// These must be kept in sync with `get_all_tracks()`.
 	const trackArgs = {
 		_fields: [ 'id', 'name', 'slug' ],
 
-		orderby: 'slug',
 		/*
-			 todo document that it's important that this match displayedTracks order, see note in
-			 ChooseSpecificTracks
-			 is that the best notes? might need more permenant ones here
+		 * It's important that the order here match `getDisplayedTracks()`; see `ChooseSpecificTracks()` for
+		 * details.
 		 */
+		orderby: 'slug',
 	};
 
+	// These must be kept in sync with `get_all_categories()`.
 	const categoryArgs = {
 		_fields: [ 'id', 'name', 'slug' ],
 	};
