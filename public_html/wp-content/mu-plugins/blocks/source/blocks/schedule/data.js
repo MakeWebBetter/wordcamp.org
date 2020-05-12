@@ -15,8 +15,6 @@ import { WC_BLOCKS_STORE } from '../../data';
 import 'moment-timezone/moment-timezone-utils';
 setSettings( __experimentalGetSettings() );
 
-
-
 /*
  * Create an implicit "0" track when none formally exist.
  *
@@ -24,6 +22,9 @@ setSettings( __experimentalGetSettings() );
  * have a track to lay sessions onto.
  */
 export const implicitTrack = { id: 0 };
+
+// Used when indexing array items by date, etc.
+export const DATE_SLUG_FORMAT = 'Y-m-d';
 
 /**
  * Get the data for the Schedule Block.
@@ -35,9 +36,7 @@ export const implicitTrack = { id: 0 };
 export function getScheduleData( attributes ) {
 	let scheduleData;
 
-	const context = attributes.__isStylesPreview ? 'example' : 'live';
-
-	if ( 'example' === context ) {
+	if ( attributes.__isStylesPreview ) {
 		scheduleData = getExampleData();
 		scheduleData.loading = false;
 
@@ -64,9 +63,10 @@ export function getScheduleData( attributes ) {
 	return scheduleData;
 }
 
-
 /**
  * Get mock data for the preview in the Style inspector control.
+ *
+ * @todo Preview only shows some of the sessions at https://2017.testing.wordcamp.org/wp-admin/post.php?post=13245&action=edit.
  *
  * return {Object}
  */
@@ -287,6 +287,9 @@ function getExampleData() {
  * longer up front, but allows for instant re-renders when changing attributes, which is a much better UX than
  * having to wait for slow HTTP requests to return new data.
  *
+ * This is only used in the editor; the front end has the data bundled in the initial HTTP response for
+ * performance/UX. See `pass_global_data_to_front_end()`.
+ *
  * @param {Function} select
  *
  * @return {Object}
@@ -319,8 +322,13 @@ const fetchScheduleData = ( select ) => {
 		_fields: [ 'id', 'name', 'slug' ],
 
 		/*
-		 * It's important that the order here match `getDisplayedTracks()`; see `ChooseSpecificTracks()` for
-		 * details.
+		 * It's important that the order here match `getDisplayedTracks()`. The tracks must be sorted in a
+		 * predictable order, so that track spanning can be reliably detected; see
+		 * `sessionSpansNonContiguousTracks()`. They must be sorted consistently throughout the application. For
+		 * organizers, alphabetical is the most obvious/intuitive way to do that. The slug is used, rather than
+		 * name, though, so that they can change the sorting order without having to rename their tracks. Renaming
+		 * slugs isn't ideal, because it could break archive pages, but it's the least-bad choice, especially for
+		 * v1. We can build a more robust solution in the future, if there's a need.
 		 */
 		orderby: 'slug',
 	};
@@ -340,10 +348,6 @@ const fetchScheduleData = ( select ) => {
 
 /**
  * Generate extra data on each session post.
- *
- * todo-data maybe move all this into a separate file? it's shared by edit and front-end, so should be in some
- * common location maybe even inside fetchScheduleData rather than both callers having to know about it and call
- * it after calling fetchscheduledata()?
  *
  * @param {Array}  allSessions
  * @param {Array}  allCategories
@@ -417,14 +421,13 @@ function deriveSessionTerms( allSessions, allCategories, allTracks ) {
 			session.session_track.includes( track.id )
 		);
 
-		// document that sorting here b/c it determines display order of the tracks, and that effects contiguous
-		// vs non-contig sorting here b/c needs to match displayedTracks so that things like up correctly? grid
-		// start/end lines match ? organizers can control display order by renaming slug, but dont have to change
-		// display this is also partially documented in ChooseSpecificTracks(). need to clean up the docs in both
-		// places
+		/*
+		 * This sort determines the display order of the tracks. That order is also what's used to determine
+		 * whether or not two sessions are overlapping within a track. This needs to match `getdisplayedTracks()`,
+		 * so that sessions line up properly on the grid. Organizers can modify the sort order by renaming slugs;
+		 * that's far from ideal, but the least-bad choice for v1. See also `sessionSpansNonContiguousTracks()`,
+		 */
 		session.derived.assignedTracks.sort( sortBySlug );
-		// prolly dont need to sort cats anymore? important for tracks, but not cats? might be nice to sort by
-		// name though so presented in alpha order
 
 		/*
 		 * There must always be a track to lay sessions on to, so add the implicit one if there aren't any real ones
@@ -433,18 +436,6 @@ function deriveSessionTerms( allSessions, allCategories, allTracks ) {
 		if ( 0 === session.derived.assignedTracks.length ) {
 			session.derived.assignedTracks[ 0 ] = implicitTrack;
 		}
-
-		//allCategories = allCategories || [];
-		/*
-			 todo tmp workaround for bug where this is null sometimes - just here so i can work on other things until solve the problem
-			 never happens if add embed:true to sessions query in scheduleSelect, but sometimes works fine w/out that and sometimes doesn't
-			 it's inconsistent. disable the workaround, then refresh a bunch, sometimes it'll work and sometimes will get typeerror b/c it's null
-				 so maybe a race condition or something like that. maybe G bug
-			when it happens there's a request to...
-			 `wp-json/wp/v2/session_category?per_page=100&_fields%5B0%5D=id&_fields%5B1%5D=name&_fields%5B2%5D=slug&context=edit&_locale=user`
-			 ...and the response looks normal
-		 maybe happened for same reasons as settings? b/c not returning early while loading. leaving commented out to test
-		*/
 
 		session.derived.assignedCategories = allCategories.filter( ( category ) =>
 			session.session_category.includes( category.id )
@@ -485,17 +476,12 @@ function filterSessionsByChosenDays( sessions, chosenDays ) {
 	}
 
 	return sessions.filter( ( session ) => {
-		const date = dateI18n( 'Y-m-d', session.derived.startTime );
+		const date = dateI18n( DATE_SLUG_FORMAT, session.derived.startTime );
 		return chosenDays.includes( date );
-
-		/*
-		 setup constant for format b/c shared with other function in this file, and also to make it more self-documenting
-		 it's the DATE_SLUG_FORMAT or something like that
-		 */
 	} );
 
 	/*
-	 kinda bad UX b/c don't really see the changes happening, below/above fold.
+	 todo kinda bad UX b/c don't really see the changes happening, below/above fold.
 	 and/or it happens so quick that kind of jarring. maybe add some jumpToBlah() and/or smoothed animation
 	 iirc G has some animation stuff built in for moving blocks around, might be reusable
 	 */

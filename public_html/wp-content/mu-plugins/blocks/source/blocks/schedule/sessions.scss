@@ -1,10 +1,6 @@
 .wordcamp-schedule__time-slot-header,
 .editor-styles-wrapper h3.wordcamp-schedule__time-slot-header,
 .wordcamp-schedule__session {
-	// todo should ^ be insession.scss instead of here?
-		// or make note in session.scss that some styles are defined in sessions.scss
-		// proper way is probably do do some kind of mixin or whatever
-
 	padding: 14px;
 	font-size: 14px;
 	border: 1px solid $color__grid-border;
@@ -34,6 +30,7 @@
 }
 
 .wordcamp-schedule__time-slot-header {
+	min-width: 100px;
 	text-align: center;
 	border-bottom: none;
 	background-color: $color__grid-border;

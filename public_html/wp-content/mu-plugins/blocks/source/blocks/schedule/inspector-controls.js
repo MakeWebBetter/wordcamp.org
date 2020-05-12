@@ -6,13 +6,10 @@ import { CheckboxControl, PanelBody, ToggleControl } from '@wordpress/components
 import { dateI18n } from '@wordpress/date';
 import { __ } from '@wordpress/i18n';
 
-/*
- * @todo-inspector
- *
- * test w/ multiple blocks on same page but w/ different settings
- *
- * commit w/ props mark, mel, corey. look for any others as well
+/**
+ * Internal dependencies
  */
+import { DATE_SLUG_FORMAT } from './data';
 
 /**
  * Render the inspector Controls for the Schedule block.
@@ -67,8 +64,7 @@ export default function ScheduleInspectorControls( { attributes, allSessions, al
  */
 function getDisplayedDays( sessions ) {
 	let uniqueDays = sessions.reduce( ( accumulatingDays, session ) => {
-		accumulatingDays[ dateI18n( 'Y-m-d', session.derived.startTime ) ] = true;
-		// maybe make a constant for the format, b/c it's being used in another place too
+		accumulatingDays[ dateI18n( DATE_SLUG_FORMAT, session.derived.startTime ) ] = true;
 
 		return accumulatingDays;
 	}, {} );
@@ -76,7 +72,6 @@ function getDisplayedDays( sessions ) {
 	uniqueDays = Object.keys( uniqueDays );
 
 	return uniqueDays.sort();
-	// todo its doing a string sort so thinks 13 < 5. maybe set to timestamp rather than true, and sort by that?
 }
 
 /**
@@ -92,9 +87,6 @@ function getDisplayedDays( sessions ) {
  * @return {Element}
  */
 function ChooseSpecificDays( { chooseSpecificDays, displayedDays, chosenDays, dateFormat, setAttributes } ) {
-	// maybe pass in onChange functions for each of these. has some pros and cons.
-	// tried it and felt like cons outweighed pros
-
 	return (
 		<div className="wordcamp-schedule__control-container">
 			<fieldset>
@@ -114,7 +106,11 @@ function ChooseSpecificDays( { chooseSpecificDays, displayedDays, chosenDays, da
 								label={ dateI18n( dateFormat, day ) }
 								checked={ chosenDays.includes( day ) }
 								onChange={ ( isChecked ) => {
-									const newDays = Array.from( chosenDays ); // setAttributes() needs a new array to determine if it's changed or not.
+									/*
+									 * Use `.from()` because `setAttributes()` needs a new array to determine if
+									 * it's changed or not.
+									 */
+									const newDays = Array.from( chosenDays );
 
 									if ( isChecked ) {
 										newDays.push( day );
@@ -147,29 +143,17 @@ function ChooseSpecificDays( { chooseSpecificDays, displayedDays, chosenDays, da
  * @return {Element}
  */
 function ChooseSpecificTracks( { chooseSpecificTracks, allTracks, chosenTrackIds, setAttributes } ) {
-	/* document that
-	 * They must be sorted in a predictable order so that track spanning can be reliably detected, and alphabetical
-	 * is the simplest way.
-	 * but slug rather than name so that they can change slug to change sorting
-	 / todo editing slugs to arrange tracks is pretty janky, but best tradeoff for now?
-		 v2 should maybe give people a way to change track order w/out dealing w/ slugs etc
-		 worth the time, though? shortcode never did, never heard any complaints
-		 maybe instead, just don't _tell_ people they can do that, to avoid the whole question
-		 but still leave the option for power users, or if anyone ever asks how they can
-		 might be more of an issue here, though, b/c CSS grid doesn't support non-contiguous tracks, while shortcode did
-	 maybe sort by name here, but probably better to match the order of the displayedtracks
-	*/
-
 	return (
 		<div className="wordcamp-schedule__control-container">
 			<fieldset>
 				<legend>
 					<ToggleControl
 						label={ __( 'Choose specific tracks', 'wordcamporg' ) }
-						help="Notes: Tracks will only appear if at least one of the sessions being displayed are assigned to them. Tracks are arranged alphabetically, according to their slug."
-							// todo maybe move ^ to just be displayed when you hover over a question-mark icon? is there an existing G pattern for that?
 						checked={ chooseSpecificTracks }
 						onChange={ ( enabled ) => setAttributes( { chooseSpecificTracks: enabled } ) }
+
+						// See `fetchScheduleData()` for details on track sorting.
+						help="Notes: Tracks are arranged alphabetically, according to their slug."
 					/>
 				</legend>
 

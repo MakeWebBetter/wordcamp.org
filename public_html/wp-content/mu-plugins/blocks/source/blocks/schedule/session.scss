@@ -20,6 +20,7 @@
 }
 
 .wordcamp-schedule__session-title,
+.editor-styles-wrapper h4.wordcamp-schedule__session-title, /* Override TwentySixteen. */
 .wordcamp-schedule__session-tracks,
 .wordcamp-schedule__session-speakers,
 .wordcamp-schedule__session-category {
@@ -72,7 +73,8 @@ dl.wordcamp-schedule__session-category,
 }
 
 .editor-styles-wrapper .wordcamp-schedule__session p.notice {
-	font-size: 1.2em;
+	font-size: 1.2em; /* Override TwentyNineteen. */
+	padding: 1px 12px; /* Override TwentySeventeen. */
 }
 
 .notice-overlaps-another-track {

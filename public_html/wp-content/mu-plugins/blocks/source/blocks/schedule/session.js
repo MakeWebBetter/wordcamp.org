@@ -3,7 +3,6 @@
  */
 import classnames from 'classnames';
 import { isEqual } from 'lodash';
-	// todo make sure ^ setup as global so not bundled in build, use core version instead
 
 /**
  * WordPress dependencies
@@ -62,27 +61,15 @@ export function Session( { session, displayedTracks, showCategories, overlapsAno
 		displayedAssignedTracks.map( ( track ) => 'has-track-' + track.slug ),
 		assignedCategories.map( ( category ) => 'has-category-' + category.slug ),
 		speakers.map( ( speaker ) => 'has-speaker-' + speaker.slug ),
-
-		// todo-favorite need to add: data-track-title="Users and Entrepreneurs: Fisher Banquet Hall" data-session-id="130696"
-			// probably cleaner way than putting track title on each session though. refactor favorite user js to look for grid markup
 	);
 
 	// This expects that `assignedTracks` and `displayedAssignedTracks` have identical sorting.
 	const startTrackId = displayedAssignedTracks[ 0 ].id;
 	let endTrackId = displayedAssignedTracks[ displayedAssignedTracks.length - 1 ].id;
 
-	/*
-	 * Spanning non-contiguous tracks isn't supported yet. As of March 2020, browsers have limited support for CSS
-	 * `subgrid`.
-	 */
 	const spansNonContiguousTracks = sessionSpansNonContiguousTracks(
 		assignedTracks.map( ( track ) => track.id ),
 		displayedTracks.map( ( track ) => track.id )
-
-		// todo should this use displayedAssignedTracks instead? probably not, but understand why
-
-		// todo-grid maybe move this up and have the value passed in as a prop, because it can be, and that'd be
-		// better form? maybe not
 	);
 
 	// Ignore the other tracks, since we can't display them accurately.
@@ -109,6 +96,9 @@ export function Session( { session, displayedTracks, showCategories, overlapsAno
 			<h4 className="wordcamp-schedule__session-title">
 				<a href={ titleLinkUrl } target={ titleLinkTarget } rel="noopener noreferrer">
 					{ title.rendered }
+
+					{ /* todo need to decode entities, e.g., "Doors Open &amp; Check-in". maybe other places too,
+					     like speaker & track names, etc */ }
 				</a>
 			</h4>
 
@@ -125,6 +115,8 @@ export function Session( { session, displayedTracks, showCategories, overlapsAno
 
 /**
  * Determine if the session spans non-contiguous tracks.
+ *
+ * This is important, because spanning non-contiguous tracks isn't supported by CSS Grid yet (via `subgrid`).
  *
  * If the assigned sessions are contiguous, then looping through them will not flip the toggle more than once.
  * If it does, we can tell that there's a gap.
@@ -179,6 +171,7 @@ function renderSpeakers( speakers, renderEnvironment ) {
 				}
 
 				const speakerLinkUrl = 'editor' === renderEnvironment ? `/wp-admin/post.php?post=${ speaker.id }&action=edit` : speaker.link;
+
 				// See note about `wordcamp-schedule__session-title` regarding the `target`.
 				const speakerLinkTarget = 'editor' === renderEnvironment ? '_blank' : '_self';
 
@@ -253,6 +246,13 @@ function renderCategories( categories ) {
  * @return {Element}
  */
 function renderWarnings( spansNonContiguousTracks, overlapsAnother ) {
+	/*
+	 * See `fetchScheduleData()` for details on the sorting problem.
+	 *
+	 * This string should explicitly mention the grid layout, because otherwise it could be
+	 * confusing to organizers viewing the mobile layout. They need to be aware of the problem
+	 * even if it isn't obvious on their current device.
+     */
 	const pleaseRenameSlugs = createInterpolateElement(
 		__( "Warning: Sessions can't span non-contiguous tracks in the grid layout. Please <a>rename the track slugs</a> so that the tracks you want to appear next to each other are sorted alphabetically.", 'wordcamporg' ),
 		{
@@ -263,13 +263,7 @@ function renderWarnings( spansNonContiguousTracks, overlapsAnother ) {
 	return (
 		<>
 			{ spansNonContiguousTracks && (
-
 				<p className="notice notice-warning notice-spans-non-contiguous-tracks">
-					{ /*
-					   * This string should explicitly mention the grid layout, because otherwise it could be
-					   * confusing to organizers viewing the mobile layout. They need to be aware of the problem
-					   * even if it isn't obvious on their current device.
-					   */ }
 					{ pleaseRenameSlugs }
 				</p>
 			) }

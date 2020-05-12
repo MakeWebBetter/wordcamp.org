@@ -37,15 +37,7 @@ export function Sessions( { sessions, displayedTracks } ) {
 		const currentSlot = timeSlots[ i ];
 		const startTime = parseInt( currentSlot );
 		const endTime = parseInt( timeSlots[ i + 1 ] );
-		// todo-grid this is wrong, the end time should be the end time of the session, not the start time of the
-		// next session should be same most of time, but wont be when user error, and it's important to notify
-		// user that there's an error
-		// well, maybe this is correct, b/c this is for a time block, not an individual session. see
-		// 9c513b8db10292e0c81bb50934cec92270480eb3.
-		// comment in groupSessionsByTimeSlot() may also be relevant
 
-		//      todo-time refactor after https://github.com/WordPress/wordcamp.org/pull/348 is merged?
-		//      any other places need to update?
 		const gridRow = `
 			time-${ dateI18n( 'Hi', startTime ) } /
 			time-${ dateI18n( 'Hi', endTime ) }

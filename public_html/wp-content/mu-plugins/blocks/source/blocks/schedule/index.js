@@ -14,16 +14,16 @@ export const ICON = 'schedule';
 
 const supports = {
 	align: [ 'wide', 'full' ],
-	// todo-misc make this dry w/ php side? speaker block doesn't, but might be nice
 };
 
-// todo explain that otherwise block styles are very very long
-// need to pass in data? can maybe import it from tests?
-// see https://github.com/WordPress/gutenberg/issues/13312
-// addding this does cause it do use the default attributes, so it may show more tracks than thye want, but that's probably a worthwhile tradeoff
+/*
+ * When real data is used, the Styles preview in the inspector controls are very long, and look odd. The live
+ * data may not be a good representation of what the styles are either, especially when an organizer is first
+ * building out their schedule.
+ */
 const example = {
 	attributes: {
-		'__isStylesPreview' : true,
+		'__isStylesPreview' : true, // todo Workaround for https://github.com/WordPress/gutenberg/issues/13312.
 	},
 };
 

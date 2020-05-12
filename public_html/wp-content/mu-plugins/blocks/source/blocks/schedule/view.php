@@ -6,6 +6,9 @@ defined( 'WPINC' ) || die();
 
 /**
  * @var array $attributes
+ *
+ * @todo If needed for SEO, or as a fallback for runtime JS errors, this could output a simple text version of
+ * the schedule data.
  */
 
 ?>

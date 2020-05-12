@@ -64,8 +64,7 @@ add_action( 'init', __NAMESPACE__ . '\init' );
  * `WordCampBlocks.schedule` property with anything on the back end, because all of the necessary data has
  * to be fetched on the fly in `fetchScheduleData`.
  *
- * It shouldn't be pre-fetched, because we won't know if the user is going to add the block to a new page.
- * Adding the data to all pages wouldn't be performant.
+ * See `pass_global_data_to_front_end()` for details on front- vs back-end data sourcing.
  *
  * @todo There's probably an elegant way to avoid the need for a workaround, by refactoring `blocks.js`.
  *
@@ -85,8 +84,20 @@ add_filter( 'wordcamp_blocks_script_data', __NAMESPACE__ . '\enable_js_block_reg
  *
  * `render()` will output the data that's specific to each block.
  *
+ * This is only used on the front end, not in the editor. For the editor, see `fetchScheduleData()`. In both
+ * contexts, the ideal situation would be to fetch the data up front, so that the block can be rendered
+ * immediately as the page loads. The page content is the most important thing, and fetching it async would
+ * introduce unnecessary delays and UX pain.
+ *
+ * That wouldn't be performant in the editor, because any block can be added to a page at any time; to immediately
+ * render, all blocks would need to output their data on all pages, which wouldn't be performant.
+ *
+ * We can do that on the front end though, because we know ahead of time whether or not the block is on the page,
+ * and don't have to worry about it being added during the current render.
+ *
  * This has to run on `template_redirect` instead of `init`, because calling `get_sessions_post()` et al would
- * create nested REST API queries. That would remove all `wc-post-types` routes from the API response, which would break block rendering.
+ * create nested REST API queries. That would remove all `wc-post-types` routes from the API response, which would
+ * break block rendering.
  *
  * In the back end, the data is intentionally fetch when the block loads. See `enable_js_block_registration()`.
  */
@@ -184,6 +195,9 @@ function get_attributes_schema() {
 /**
  * Get the posts to display in the block.
  *
+ * Using an internal REST API query because the data needs to match the same format that `fetchScheduleData()`
+ * returns.
+ *
  * @todo If needed, this could be optimized by only querying for sessions that have been assigned a date/time. If
  *       specific days/tracks attributes are set, then the query could also be narrowed to sessions which match
  *       those. Make sure that it's the _union_ of al chosen days/tracks for _all_ blocks on the page, though,
@@ -219,12 +233,18 @@ function get_all_sessions() {
 /**
  * Get all of the tracks, including ones that won't be displayed.
  *
+ * Using an internal REST API query because the data needs to match the same format that `fetchScheduleData()`
+ * returns.
+ *
  * @return array
  */
 function get_all_tracks() {
 	$request = new WP_REST_Request( 'GET', '/wp/v2/session_track' );
 
-	// These must be kept in sync with `fetchScheduleData()`.
+	/*
+	 * These must be kept in sync with `fetchScheduleData()`, especially the `orderby`. See comments in that
+	 * function for details.
+	 */
 	$request->set_param( 'per_page', 100 );
 	$request->set_param( '_fields', array( 'id', 'name', 'slug' ) );
 	$request->set_param( 'orderby', 'slug' );
@@ -236,6 +256,9 @@ function get_all_tracks() {
 
 /**
  * Get all of the categories, including ones that won't be displayed.
+ *
+ * Using an internal REST API query because the data needs to match the same format that `fetchScheduleData()`
+ * returns.
  *
  * @return array
  */
