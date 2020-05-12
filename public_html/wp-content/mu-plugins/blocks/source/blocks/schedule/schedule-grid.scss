@@ -8,6 +8,8 @@ $color__grid-border: #e0e5e9;
  * todo
  *
  * time column is wider than track columns, but it should be equal or maybe a bit smaller
+ *
+ * alignfull causes horizontal scrolling, at least with some themes
  */
 
 @mixin breakpoint-grid-layout() {

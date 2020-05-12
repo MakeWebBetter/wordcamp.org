@@ -10,7 +10,8 @@ import { useContext } from '@wordpress/element';
  */
 import { Sessions } from './sessions';
 import { NoContent } from '../../components/';
-import { ScheduleGridContext, implicitTrack, sortBySlug } from './edit';
+import { implicitTrack, sortBySlug } from './data';
+import { ScheduleGridContext } from './edit';
 
 /*
  * todo-grid

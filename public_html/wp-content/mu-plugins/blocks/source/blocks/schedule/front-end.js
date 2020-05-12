@@ -1,9 +1,8 @@
 /**
  * Internal dependencies
  */
-import { ScheduleGridContext, getDerivedSessions } from './edit';
-	// todo move ^ to a common file since they're shared between editor and front end
-	// maybe the functions should live in schedule-grid, and just have the data passed in by the caller?
+import { ScheduleGridContext } from './edit';
+import { getDerivedSessions } from './data';
 import './front-end.scss';
 
 const rawScheduleData = window.WordCampBlocks.schedule || {};
@@ -121,8 +120,9 @@ function ScheduleGridWithContext( props ) {
 function getScheduleGrdProps( element ) {
 	const { attributes: rawAttributes } = element.dataset;
 	const { allCategories, allTracks, settings } = rawScheduleData;
-		// document why outting in initial response instead of fetching async - perf/ux. document in controller.php or here or both?
+		// todo document why outting in initial response instead of fetching async - perf/ux - faster. document in controller.php or here or both?
 		// see also cotroller.php::populate_global_data_store(), and the other filter callback if that sticks around
+
 	let parsedAttributes = {};
 	let derivedSessions = [];
 
