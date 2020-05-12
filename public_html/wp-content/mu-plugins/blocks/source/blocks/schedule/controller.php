@@ -67,7 +67,7 @@ add_action( 'init', __NAMESPACE__ . '\init' );
  * It shouldn't be pre-fetched, because we won't know if the user is going to add the block to a new page.
  * Adding the data to all pages wouldn't be performant.
  *
- * @todo Evaluate if there's a better way to perform that test, that wouldn't require workarounds ike this.
+ * @todo There's probably an elegant way to avoid the need for a workaround, by refactoring `blocks.js`.
  *
  * @param array $data
  *

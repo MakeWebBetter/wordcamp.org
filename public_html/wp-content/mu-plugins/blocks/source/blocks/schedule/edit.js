@@ -22,10 +22,12 @@ import './edit.scss';
 
 export const ScheduleGridContext = createContext();
 
-// An "implicit" track is assigned to sessions that don't have any real tracks assigned.
-// See controller.php::print_dynamic_styles().
-// todo if remove that function b/c using js to render front end, then probably move docs from there to
-// renderdynamicgridstyles()
+/*
+ * Create an implicit "0" track when none formally exist.
+ *
+ * Camps with a single track may neglect to create a formal one, but the Grid still has to
+ * have a track to lay sessions onto.
+ */
 export const implicitTrack = { id: 0 };
 
 
@@ -51,22 +53,12 @@ export function ScheduleEdit( { attributes, setAttributes } ) {
 			if ( datum === null ) {
 				return <NoContent loading={ true } />;
 			}
-
-			// todo is it possible to use async/await instead? prolly not since datum isn't a promise
-			// but could if switch to apiFetch directly instead of store abstraction
 		}
 	}
 
 	const { allCategories, allTracks, settings } = rawScheduleData;
 	const derivedSessions = getDerivedSessions( rawScheduleData.allSessions, allCategories, allTracks, attributes );
 	const { allSessions, chosenSessions } = derivedSessions;
-
-	/*
-	todo
-	 maybe add a allTrack[n].derived.countDisplayedSessions that only counts how many of the _currently displayed_ sessions it has assigned to it
-		 that might let us remove some clunky code in the grid
-			 like what?
-	*/
 
 	const contextValues = {
 		allTracks: allTracks,
@@ -102,12 +94,6 @@ export function ScheduleEdit( { attributes, setAttributes } ) {
  * return {Object}
  */
 function getExampleData() {
-	// todo make this an external file? maybe share it with unit tests
-
-	// todo prune all these fields to remove anything that's not needed
-
-	// also update slugs, titles, urls, ids, etc to look cleaner
-
 	const hourInSeconds = 60 * 60;
 	const yearInSeconds = 60 * 60 * 24 * 365;
 
@@ -121,150 +107,147 @@ function getExampleData() {
 	 * `_wcpt_session_time` must not be the same day as any real sessions, or the grid for the actual block will
 	 * collapse when the preview is shown.
 	 */
-	const todayNextYear = ( todayZeroHour.valueOf() / 1000 )+ yearInSeconds;
+	const todayNextYear = ( todayZeroHour.valueOf() / 1000 ) + yearInSeconds;
 
 	return {
 		'allSessions': [
-			// maybe make the date sometimes in 1970 so it doesn't conflict w/ any dates current camp would be? if so then need to document that
 			{
-				'id'              : 999999123477,
-				'slug'            : 'post-23',
-				'link'            : 'https://2016.misc.wordcamp.test/session/post-23-99999/',
-				'title'           : {
-					'raw'     : 'Session 7 - global',
-					'rendered': 'Session 7 &#8211; global'
+				'id': 1,
+				'slug': 'post-1',
+				'link': 'https://2020.seattle.wordcamp.test/session/post-1/',
+
+				'title': {
+					'rendered': 'Session 1'
 				},
-				'meta'            : {
-					'_wcpt_session_time'    : todayNextYear + ( 2 * hourInSeconds ),
+
+				'meta': {
+					'_wcpt_session_time': todayNextYear + ( 2 * hourInSeconds ),
 					'_wcpt_session_duration': 1800,
-					'_wcpt_session_type'    : 'custom'
+					'_wcpt_session_type': 'custom'
 				},
-				'session_track'   : [
+
+				'session_track': [
 					38,
 					748,
 					46,
 				],
+
 				'session_category': [],
 				'session_speakers': [],
 			},
 
 			{
-				'id'              : 12347633333333,
-				'slug'            : 'session-6-span-multiple-contiguous-tracks-342',
-				'link'            : 'https://2016.misc.wordcamp.test/session/session-6-span-multiple-contiguous-tracks/324234',
-				'title'           : {
-					'raw'     : 'Session 6 - span multiple contiguous tracks',
-					'rendered': 'Session 6 &#8211; span multiple contiguous tracks'
+				'id': 2,
+				'slug': 'post-2',
+				'link': 'https://2020.seattle.wordcamp.test/session/session-2',
+
+				'title': {
+					'rendered': 'Session 2'
 				},
-				'meta'            : {
-					'_wcpt_session_time'    : todayNextYear + hourInSeconds,
+
+				'meta': {
+					'_wcpt_session_time': todayNextYear + hourInSeconds,
 					'_wcpt_session_duration': 3600,
-					'_wcpt_session_type'    : 'session'
+					'_wcpt_session_type': 'session'
 				},
-				'session_track'   : [
+
+				'session_track': [
 					38,
 					748
 				],
-				'session_category': [],
-				'session_speakers': [
-					{
-						'id'  : '123395',
-						'slug': 'ian-dunn',
-						'name': 'Ian Dunn',
-						'link': 'https://2016.misc.wordcamp.test/speaker/ian-dunn/'
-					},
-					{
-						'id'  : '45321',
-						'slug': 'konstantin',
-						'name': 'konstantin',
-						'link': 'https://2016.misc.wordcamp.test/speaker/konstantin/'
-					}
-				],
-			},
 
-			{
-				'id'              : 123475,
-				'slug'            : 'post-21',
-				'link'            : 'https://2016.misc.wordcamp.test/session/post-21/',
-				'title'           : {
-					'raw'     : 'Session 5',
-					'rendered': 'Session 5'
-				},
-				'meta'            : {
-					'_wcpt_session_time'    : todayNextYear + ( hourInSeconds / 2 ),
-					'_wcpt_session_duration': 5400,
-					'_wcpt_session_type'    : 'session'
-				},
-				'session_track'   : [
-					46
-				],
 				'session_category': [],
 				'session_speakers': [],
 			},
 
 			{
-				'id'              : 123473,
-				'slug'            : 'post-19',
-				'link'            : 'https://2016.misc.wordcamp.test/session/post-19/',
-				'title'           : {
-					'raw'     : 'Session 3',
+				'id': 3,
+				'slug': 'post-3',
+				'link': 'https://2020.seattle.wordcamp.test/session/post-3/',
+
+				'title': {
 					'rendered': 'Session 3'
 				},
-				'meta'            : {
-					'_wcpt_session_time'    : todayNextYear,
-					'_wcpt_session_duration': 1800,
-					'_wcpt_session_type'    : 'session'
+
+				'meta': {
+					'_wcpt_session_time': todayNextYear + ( hourInSeconds / 2 ),
+					'_wcpt_session_duration': 5400,
+					'_wcpt_session_type': 'session'
 				},
-				'session_track'   : [
+
+				'session_track': [
 					46
 				],
-				'session_category': [],
-				'session_speakers': [
-					{
-						'id'  : '254',
-						'slug': 'frank',
-						'name': 'andrea',
-						'link': 'https://2016.misc.wordcamp.test/speaker/frank/'
-					}
-				],
-			},
 
-			{
-				'id'              : 123472,
-				'slug'            : 'post-18',
-				'link'            : 'https://2016.misc.wordcamp.test/session/post-18/',
-				'title'           : {
-					'raw'     : 'Session 2',
-					'rendered': 'Session 2'
-				},
-				'meta'            : {
-					'_wcpt_session_time'    : todayNextYear,
-					'_wcpt_session_duration': 3600,
-					'_wcpt_session_type'    : 'session'
-				},
-				'session_track'   : [
-					748
-				],
 				'session_category': [],
 				'session_speakers': [],
 			},
 
 			{
-				'id'              : 123471,
-				'slug'            : 'post-17',
-				'link'            : 'https://2016.misc.wordcamp.test/session/post-17/',
-				'title'           : {
-					'raw'     : 'Session 1',
-					'rendered': 'Session 1'
+				'id': 4,
+				'slug': 'post-4',
+				'link': 'https://2020.seattle.wordcamp.test/session/post-4/',
+
+				'title': {
+					'rendered': 'Session 4'
 				},
-				'meta'            : {
-					'_wcpt_session_time'    : todayNextYear,
+
+				'meta': {
+					'_wcpt_session_time': todayNextYear,
+					'_wcpt_session_duration': 1800,
+					'_wcpt_session_type': 'session'
+				},
+
+				'session_track': [
+					46
+				],
+
+				'session_category': [],
+				'session_speakers': [],
+			},
+
+			{
+				'id': 5,
+				'slug': 'post-5',
+				'link': 'https://2020.seattle.wordcamp.test/session/post-5/',
+
+				'title': {
+					'rendered': 'Session 5'
+				},
+
+				'meta': {
+					'_wcpt_session_time': todayNextYear,
 					'_wcpt_session_duration': 3600,
-					'_wcpt_session_type'    : 'session'
+					'_wcpt_session_type': 'session'
 				},
-				'session_track'   : [
+
+				'session_track': [
+					748
+				],
+
+				'session_category': [],
+				'session_speakers': [],
+			},
+
+			{
+				'id': 6,
+				'slug': 'post-6',
+				'link': 'https://2020.seattle.wordcamp.test/session/post-6/',
+
+				'title': {
+					'rendered': 'Session 6'
+				},
+
+				'meta': {
+					'_wcpt_session_time': todayNextYear,
+					'_wcpt_session_duration': 3600,
+					'_wcpt_session_type': 'session'
+				},
+
+				'session_track': [
 					38
 				],
+
 				'session_category': [],
 				'session_speakers': [],
 			}
@@ -272,22 +255,25 @@ function getExampleData() {
 
 		'allTracks': [
 			{
-				'id'  : 38,
+				'id': 38,
 				'name': 'Bar',
 				'slug': 'bar'
 			},
+
 			{
-				'id'  : 748,
+				'id': 748,
 				'name': 'Bax',
 				'slug': 'bax'
 			},
+
 			{
-				'id'  : 46,
+				'id': 46,
 				'name': 'Foo',
 				'slug': 'foo'
 			},
+
 			{
-				'id'  : 747,
+				'id': 747,
 				'name': 'Quix',
 				'slug': 'quix'
 			},
@@ -296,10 +282,10 @@ function getExampleData() {
 		'allCategories': [],
 
 		'settings': {
-			'timezone'   : 'America/Vancouver',
+			'timezone': 'America/Vancouver',
 			'date_format': 'F j, Y',
 			'time_format': 'g:i a',
-			'language'   : '',
+			'language': '',
 		}
 	};
 }

@@ -4,10 +4,6 @@ namespace WordCamp\Blocks\Schedule;
 
 defined( 'WPINC' ) || die();
 
-/*
- * todo-front show a spinner instead of just "loading...".
- */
-
 /**
  * @var array $attributes
  */
