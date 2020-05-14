@@ -23,7 +23,9 @@ import { DATE_SLUG_FORMAT } from './data';
  *
  * @return {Element}
  */
-export default function ScheduleInspectorControls( { attributes, allSessions, allTracks, setAttributes, settings } ) {
+export default function ScheduleInspectorControls(
+	{ attributes, allSessions, allTracks, setAttributes, settings }
+) {
 	const { showCategories, chooseSpecificDays, chosenDays, chooseSpecificTracks, chosenTrackIds } = attributes;
 	const displayedDays = getDisplayedDays( allSessions );
 

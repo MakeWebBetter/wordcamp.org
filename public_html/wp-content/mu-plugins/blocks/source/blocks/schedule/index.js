@@ -23,7 +23,7 @@ const supports = {
  */
 const example = {
 	attributes: {
-		'__isStylesPreview' : true, // todo Workaround for https://github.com/WordPress/gutenberg/issues/13312.
+		__isStylesPreview: true, // todo Workaround for https://github.com/WordPress/gutenberg/issues/13312.
 	},
 };
 

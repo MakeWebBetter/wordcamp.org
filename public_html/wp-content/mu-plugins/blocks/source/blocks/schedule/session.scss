@@ -14,6 +14,7 @@
 }
 
 .wordcamp-schedule__session-title,
+.editor-styles-wrapper .wp-block .wordcamp-schedule h4, /* Override TwentyTwenty */
 .editor-styles-wrapper .wordcamp-schedule__session-title {
 	font-size: 1.1em;
 	margin: 0;

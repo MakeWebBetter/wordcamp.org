@@ -35,7 +35,7 @@ export function ScheduleEdit( { attributes, setAttributes } ) {
 		allTracks: allTracks,
 		attributes: attributes,
 		settings: settings,
-		renderEnvironment: 'editor'
+		renderEnvironment: 'editor',
 	};
 
 	return (

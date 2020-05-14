@@ -2,11 +2,6 @@
 
 namespace WordCamp\Blocks;
 
-
-// todo https://2016.misc.wordcamp.test/tickets/?tix_action=checkout has 2 instances where `wordcampblocks` is being defined on the page. should only be 1.
-	// but also, shouldn't even be on page, because the page doesn't contain any blocks
-	// iirc there's already a note in schedule block about that. move this comment there
-
 defined( 'WPINC' ) || die();
 
 define( __NAMESPACE__ . '\PLUGIN_DIR', \plugin_dir_path( __FILE__ ) );

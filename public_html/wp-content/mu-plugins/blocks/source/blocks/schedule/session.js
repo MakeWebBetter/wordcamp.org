@@ -256,7 +256,7 @@ function renderWarnings( spansNonContiguousTracks, overlapsAnother ) {
 	const pleaseRenameSlugs = createInterpolateElement(
 		__( "Warning: Sessions can't span non-contiguous tracks in the grid layout. Please <a>rename the track slugs</a> so that the tracks you want to appear next to each other are sorted alphabetically.", 'wordcamporg' ),
 		{
-			a: <a href={ '/wp-admin/edit-tags.php?taxonomy=wcb_track&post_type=wcb_session' } />,
+			a: <a href={ '/wp-admin/edit-tags.php?taxonomy=wcb_track&post_type=wcb_session' } >#21441-gutenberg</a>,
 		}
 	);
 

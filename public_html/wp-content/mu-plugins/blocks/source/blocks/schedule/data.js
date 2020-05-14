@@ -2,7 +2,7 @@
  * WordPress dependencies
  */
 import { useSelect } from '@wordpress/data';
-import { dateI18n, setSettings, __experimentalGetSettings } from '@wordpress/date';
+import { __experimentalGetSettings, dateI18n, setSettings } from '@wordpress/date';
 
 /**
  * Internal dependencies
@@ -39,9 +39,13 @@ export function getScheduleData( attributes ) {
 	if ( attributes.__isStylesPreview ) {
 		scheduleData = getExampleData();
 		scheduleData.loading = false;
-
 	} else {
 		scheduleData = useSelect( fetchScheduleData );
+			// todo can't call ^ inside condition? wtf
+				// if have to, then maybe pass an arg that tells it to just return null without making an API request?
+				// yeah, that seems like the blessed way to do it
+
+			// if convert ths to a  custom hook or whatever, then does that mean i no longer need the `if null then loading=true` bits below, because there'll be some other mechanism?
 		scheduleData.loading = false;
 
 		for ( const datum of Object.values( scheduleData ) ) {
@@ -87,183 +91,183 @@ function getExampleData() {
 	const todayNextYear = ( todayZeroHour.valueOf() / 1000 ) + yearInSeconds;
 
 	return {
-		'allSessions': [
+		allSessions: [
 			{
-				'id': 1,
-				'slug': 'post-1',
-				'link': 'https://2020.seattle.wordcamp.test/session/post-1/',
+				id: 1,
+				slug: 'post-1',
+				link: 'https://2020.seattle.wordcamp.test/session/post-1/',
 
-				'title': {
-					'rendered': 'Session 1'
+				title: {
+					rendered: 'Session 1',
 				},
 
-				'meta': {
-					'_wcpt_session_time': todayNextYear + ( 2 * hourInSeconds ),
-					'_wcpt_session_duration': 1800,
-					'_wcpt_session_type': 'custom'
+				meta: {
+					_wcpt_session_time: todayNextYear + ( 2 * hourInSeconds ),
+					_wcpt_session_duration: 1800,
+					_wcpt_session_type: 'custom',
 				},
 
-				'session_track': [
+				session_track: [
 					38,
 					748,
 					46,
 				],
 
-				'session_category': [],
-				'session_speakers': [],
+				session_category: [],
+				session_speakers: [],
 			},
 
 			{
-				'id': 2,
-				'slug': 'post-2',
-				'link': 'https://2020.seattle.wordcamp.test/session/session-2',
+				id: 2,
+				slug: 'post-2',
+				link: 'https://2020.seattle.wordcamp.test/session/session-2',
 
-				'title': {
-					'rendered': 'Session 2'
+				title: {
+					rendered: 'Session 2',
 				},
 
-				'meta': {
-					'_wcpt_session_time': todayNextYear + hourInSeconds,
-					'_wcpt_session_duration': 3600,
-					'_wcpt_session_type': 'session'
+				meta: {
+					_wcpt_session_time: todayNextYear + hourInSeconds,
+					_wcpt_session_duration: 3600,
+					_wcpt_session_type: 'session',
 				},
 
-				'session_track': [
+				session_track: [
 					38,
-					748
+					748,
 				],
 
-				'session_category': [],
-				'session_speakers': [],
+				session_category: [],
+				session_speakers: [],
 			},
 
 			{
-				'id': 3,
-				'slug': 'post-3',
-				'link': 'https://2020.seattle.wordcamp.test/session/post-3/',
+				id: 3,
+				slug: 'post-3',
+				link: 'https://2020.seattle.wordcamp.test/session/post-3/',
 
-				'title': {
-					'rendered': 'Session 3'
+				title: {
+					rendered: 'Session 3',
 				},
 
-				'meta': {
-					'_wcpt_session_time': todayNextYear + ( hourInSeconds / 2 ),
-					'_wcpt_session_duration': 5400,
-					'_wcpt_session_type': 'session'
+				meta: {
+					_wcpt_session_time: todayNextYear + ( hourInSeconds / 2 ),
+					_wcpt_session_duration: 5400,
+					_wcpt_session_type: 'session',
 				},
 
-				'session_track': [
-					46
+				session_track: [
+					46,
 				],
 
-				'session_category': [],
-				'session_speakers': [],
+				session_category: [],
+				session_speakers: [],
 			},
 
 			{
-				'id': 4,
-				'slug': 'post-4',
-				'link': 'https://2020.seattle.wordcamp.test/session/post-4/',
+				id: 4,
+				slug: 'post-4',
+				link: 'https://2020.seattle.wordcamp.test/session/post-4/',
 
-				'title': {
-					'rendered': 'Session 4'
+				title: {
+					rendered: 'Session 4',
 				},
 
-				'meta': {
-					'_wcpt_session_time': todayNextYear,
-					'_wcpt_session_duration': 1800,
-					'_wcpt_session_type': 'session'
+				meta: {
+					_wcpt_session_time: todayNextYear,
+					_wcpt_session_duration: 1800,
+					_wcpt_session_type: 'session',
 				},
 
-				'session_track': [
-					46
+				session_track: [
+					46,
 				],
 
-				'session_category': [],
-				'session_speakers': [],
+				session_category: [],
+				session_speakers: [],
 			},
 
 			{
-				'id': 5,
-				'slug': 'post-5',
-				'link': 'https://2020.seattle.wordcamp.test/session/post-5/',
+				id: 5,
+				slug: 'post-5',
+				link: 'https://2020.seattle.wordcamp.test/session/post-5/',
 
-				'title': {
-					'rendered': 'Session 5'
+				title: {
+					rendered: 'Session 5',
 				},
 
-				'meta': {
-					'_wcpt_session_time': todayNextYear,
-					'_wcpt_session_duration': 3600,
-					'_wcpt_session_type': 'session'
+				meta: {
+					_wcpt_session_time: todayNextYear,
+					_wcpt_session_duration: 3600,
+					_wcpt_session_type: 'session',
 				},
 
-				'session_track': [
-					748
+				session_track: [
+					748,
 				],
 
-				'session_category': [],
-				'session_speakers': [],
+				session_category: [],
+				session_speakers: [],
 			},
 
 			{
-				'id': 6,
-				'slug': 'post-6',
-				'link': 'https://2020.seattle.wordcamp.test/session/post-6/',
+				id: 6,
+				slug: 'post-6',
+				link: 'https://2020.seattle.wordcamp.test/session/post-6/',
 
-				'title': {
-					'rendered': 'Session 6'
+				title: {
+					rendered: 'Session 6',
 				},
 
-				'meta': {
-					'_wcpt_session_time': todayNextYear,
-					'_wcpt_session_duration': 3600,
-					'_wcpt_session_type': 'session'
+				meta: {
+					_wcpt_session_time: todayNextYear,
+					_wcpt_session_duration: 3600,
+					_wcpt_session_type: 'session',
 				},
 
-				'session_track': [
-					38
+				session_track: [
+					38,
 				],
 
-				'session_category': [],
-				'session_speakers': [],
-			}
-		],
-
-		'allTracks': [
-			{
-				'id': 38,
-				'name': 'Bar',
-				'slug': 'bar'
-			},
-
-			{
-				'id': 748,
-				'name': 'Bax',
-				'slug': 'bax'
-			},
-
-			{
-				'id': 46,
-				'name': 'Foo',
-				'slug': 'foo'
-			},
-
-			{
-				'id': 747,
-				'name': 'Quix',
-				'slug': 'quix'
+				session_category: [],
+				session_speakers: [],
 			},
 		],
 
-		'allCategories': [],
+		allTracks: [
+			{
+				id: 38,
+				name: 'Bar',
+				slug: 'bar',
+			},
 
-		'settings': {
-			'timezone': 'America/Vancouver',
-			'date_format': 'F j, Y',
-			'time_format': 'g:i a',
-			'language': '',
-		}
+			{
+				id: 748,
+				name: 'Bax',
+				slug: 'bax',
+			},
+
+			{
+				id: 46,
+				name: 'Foo',
+				slug: 'foo',
+			},
+
+			{
+				id: 747,
+				name: 'Quix',
+				slug: 'quix',
+			},
+		],
+
+		allCategories: [],
+
+		settings: {
+			timezone: 'America/Vancouver',
+			date_format: 'F j, Y',
+			time_format: 'g:i a',
+			language: '',
+		},
 	};
 }
 
@@ -430,8 +434,8 @@ function deriveSessionTerms( allSessions, allCategories, allTracks ) {
 		session.derived.assignedTracks.sort( sortBySlug );
 
 		/*
-		 * There must always be a track to lay sessions on to, so add the implicit one if there aren't any real ones
-		 * assigned.
+		 * There must always be a track to lay sessions on to, so add the implicit one if there aren't any real
+		 * ones assigned.
 		 */
 		if ( 0 === session.derived.assignedTracks.length ) {
 			session.derived.assignedTracks[ 0 ] = implicitTrack;

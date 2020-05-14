@@ -18,8 +18,10 @@ const rawScheduleData = window.WordCampBlocks.schedule || {};
  * `wp_using_themes() && ! wcorg_is_rest_api_request()` ? - https://wordpress.stackexchange.com/a/360401/3898
  *
  * the front-end build file is really big
- * still seeing a bunch of dependencies being added to it, like classnames, lodash, memoize, @babel and @emotion, etc.
- * also contains stuff from other custom blocks, like components/image/avatar.js, even though not used in this block
+ * still seeing a bunch of dependencies being added to it, like classnames, lodash, memoize, @babel and @emotion,
+ * etc.
+ * also contains stuff from other custom blocks, like components/image/avatar.js, even though not used in this
+ * block.
  * some of those may be expected, but others should definitely not be bundled.
  * maybe just need to explicitly add the @wordpress/* components that we're using to package.json `dependencies`?
  * then the above packages will be registered as externals automatically?
@@ -51,9 +53,16 @@ function ScheduleGridWithContext( props ) {
 	 */
 	delete attributes.attributes;
 
+	const contextValues = {
+		allTracks: allTracks,
+		attributes: attributes,
+		settings: settings,
+		renderEnvironment: 'front-end',
+	};
+
 	return (
 		<ScheduleGridContext.Provider
-			value={ { allTracks, attributes, settings, renderEnvironment: 'front-end' } }
+			value={ contextValues }
 		>
 			<ScheduleGrid sessions={ chosenSessions } />
 		</ScheduleGridContext.Provider>
@@ -77,7 +86,13 @@ function getScheduleGrdProps( element ) {
 
 	if ( rawAttributes ) {
 		parsedAttributes = JSON.parse( decodeURIComponent( rawAttributes ) );
-		derivedSessions = getDerivedSessions( rawScheduleData.allSessions, allCategories, allTracks, parsedAttributes );
+
+		derivedSessions = getDerivedSessions(
+			rawScheduleData.allSessions,
+			allCategories,
+			allTracks,
+			parsedAttributes
+		);
 	}
 
 	const props = {

@@ -175,7 +175,6 @@ function getDisplayedTracks( sessions, allTracks, chooseSpecificTracks, chosenTr
 
 	if ( chooseSpecificTracks && chosenTrackIds.length ) {
 		displayedTracksIds = chosenTrackIds;
-
 	} else {
 		// Gather all of the tracks from the given sessions.
 		const uniqueTrackIds = new Set();
