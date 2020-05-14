@@ -158,7 +158,7 @@ module.exports = {
 			'error',
 			{
 				min: 3,
-				exceptions: [ '__', '_n', '_x', 'id', 'a', 'b' ],
+				exceptions: [ '__', '_n', '_x', 'id', 'a', 'b', 'i' ],
 			},
 		],
 
